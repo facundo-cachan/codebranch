@@ -14,7 +14,7 @@ const widthPercentageToDP = (widthPercent: string | number) => {
     typeof widthPercent === 'number' ? widthPercent : parseFloat(widthPercent);
   // Use PixelRatio.roundToNearestPixel method in order to round the layout
   // size (dp) to the nearest one that correspons to an integer number of pixels.
-  return Math.round(PixelRatio.roundToNearestPixel((width * elemWidth) / 100));
+  return PixelRatio.roundToNearestPixel((width * elemWidth) / 100);
 };
 
 /**

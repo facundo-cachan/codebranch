@@ -5,7 +5,6 @@ import * as Images from './image'
 import * as Inputs from './inputs'
 import * as Loaders from './loaders'
 import * as ScrollView from './scrollView'
-import * as Swiper from './swiper'
 import * as Texts from './texts'
 
 import type { TextStyle, ViewStyle } from 'react-native'
@@ -22,7 +21,6 @@ export {
   Inputs,
   Loaders,
   ScrollView,
-  Swiper,
   Texts, colorCommon, sizeCommon
 }
 

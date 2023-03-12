@@ -1,10 +1,10 @@
-import { Image } from 'react-native';
+import { Image } from 'react-native'
 
-import logo from '@assets/img/Soleado.png';
+import logo from '@assets/img/Logo.png'
 
-import { hp, wp } from '@utils/_dimensions';
+import { hp, wp } from '@utils/_dimensions'
 
-import type { ImageProps } from './';
+import type { ImageProps } from './'
 
 const Default = ({
   style,
