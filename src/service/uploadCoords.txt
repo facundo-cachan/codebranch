@@ -1,0 +1,85 @@
+/* eslint-disable @typescript-eslint/no-shadow */
+import { AxiosRequestConfig } from 'axios';
+import moment from 'moment';
+import NetInfo from '@react-native-community/netinfo';
+import { getBatteryLevel } from 'react-native-device-info';
+import { GeoPosition } from 'react-native-geolocation-service';
+
+import {
+  destroySavedCoords,
+  getSavedCoords,
+  saveCoords,
+} from '../utils/_coords';
+import fetcher from '../utils/_fetcher';
+
+type Coord = {
+  coords: {
+    latitude: number;
+    longitude: number;
+    accuracy: number;
+  };
+  timestamp: moment.MomentInput;
+};
+const formatTime = (
+  lat: number,
+  lng: number,
+  acc: number,
+  batt: number,
+  time: moment.MomentInput,
+) => ({
+  lat,
+  lng,
+  accuracy: acc,
+  battery: batt,
+  recorded: moment.utc(time).format('YYYY-MM-DD HH:mm:ss'),
+});
+async function sendCoords({ coords, timestamp }: Coord, access_token: string) {
+  const { latitude, longitude, accuracy } = coords;
+  const savedCoords: any = await getSavedCoords();
+  const batteryLevel = await getBatteryLevel();
+  const battery: number = Math.floor(batteryLevel * 100);
+  let url: string = 'user/point/save';
+  let data = formatTime(latitude, longitude, accuracy, battery, timestamp);
+  if (savedCoords && savedCoords.length >= 1) {
+    url = 'user/point/saveMany';
+    data = savedCoords.map(
+      (
+        { coords: { latitude, longitude, accuracy }, timestamp }: Coord,
+        battery: number,
+      ) => formatTime(latitude, longitude, accuracy, battery, timestamp),
+    );
+    destroySavedCoords();
+  }
+  const options: AxiosRequestConfig = {
+    url,
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+    },
+    data,
+  };
+  return await handlerAxios(options).then(({ data: res, status }: any) => {
+    if (status >= 200 && status < 300) {
+      destroySavedCoords();
+      return res;
+    } else {
+      return data;
+    }
+  });
+}
+
+export async function uploadCoords(
+  position: GeoPosition,
+  access_token: string,
+) {
+  try {
+    const { isInternetReachable } = await NetInfo.fetch();
+    if (isInternetReachable) {
+      await sendCoords(position, access_token);
+    } else {
+      saveCoords(position);
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
