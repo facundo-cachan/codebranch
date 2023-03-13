@@ -12,5 +12,3 @@ margin-bottom: 100px
 ">
   <img src="./assets/demo.gif" width="200" style="margin: 1rem" />
 </div>
-
-<h5>End of project, still works on it.</h5>
